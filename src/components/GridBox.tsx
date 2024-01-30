@@ -155,7 +155,7 @@ const GridBox = () => {
   }, [isMounted, input]);
 
   return (
-    <div className="flex gap-10 w-full">
+    <div className="flex gap-3 w-full">
       <div className="flex flex-col gap-4">
         <div className="flex gap-4 border p-2 w-fukk">
           <div className="flex flex-col">
