@@ -1,10 +1,12 @@
 "use client";
 
+import useMounted from "@/hooks/useMounted";
+import { exportCSS } from "@/libs/grid";
 import {
-  ChangeEvent,
   Suspense,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -14,6 +16,8 @@ type GridOptionsType = {
   board: string;
   rows: number;
   cols: number;
+  rowstemplate: string;
+  colstemplate: string;
   gap: number;
   width: number;
   height: number;
@@ -28,19 +32,19 @@ type GridItemType = {
 const GridBoard = styled.div<GridOptionsType>`
   position: relative;
   grid-template-areas: ${({ board }) => board};
-  grid-template-rows: ${({ rows, width }) => `repeat(${rows},${width}px)`};
-
-  grid-template-columns: ${({ cols, height }) =>
-    `repeat(${cols}, ${height}px)`};
+  grid-template-rows: ${({ rowstemplate }) => rowstemplate};
+  grid-template-columns: ${({ colstemplate }) => colstemplate};
   gap: ${({ gap }) => `${gap}px`};
 `;
 
 const GridItem = styled.div<{ resizable: string; height: number }>`
   resize: ${({ resizable }) => (resizable === "true" ? "both" : "none")};
   z-index: 9;
+  height: ${({ height }) => `${height}px`};
 `;
 
 const GridBox = () => {
+  const isMounted = useMounted();
   const ref = useRef<HTMLDivElement>(null);
   const item = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<GridItemType | null>(null);
@@ -63,7 +67,8 @@ const GridBox = () => {
      ". . . . . . . . . ."`,
   });
   const [arr, setArr] = useState<{ x: number; y: number }[]>([]);
-  const [board, setBoard] = useState<string[]>([]);
+  const [css, setCSS] = useState("");
+  //const [board, setBoard] = useState<string[]>([]);
 
   const generateCoordinates = useCallback(() => {
     setArr([]);
@@ -77,11 +82,11 @@ const GridBox = () => {
       }
       areas.push(`${area}`);
     }
-    setBoard(areas);
+    //setBoard(areas);
   }, [input]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 이미 선택한 item이 있는 경우 다음 클릭 위치 기반 영역 수정
+    e.stopPropagation();
 
     if (selected) return;
 
@@ -105,10 +110,10 @@ const GridBox = () => {
 
     if (!newWidth || !newHeight) return;
 
-    item.current.style.gridColumn = `auto / span ${Math.floor(
+    item.current.style.gridColumn = `auto / span ${Math.round(
       newWidth / input.width
     )}`;
-    item.current.style.gridRow = `auto / span ${Math.floor(
+    item.current.style.gridRow = `auto / span ${Math.round(
       newHeight / input.height
     )}`;
     item.current.style.width = "auto";
@@ -116,29 +121,38 @@ const GridBox = () => {
   };
 
   const handleExport = () => {
-    console.log(ref.current?.style);
+    if (!ref.current) return;
+
+    const css = exportCSS(ref.current);
+    console.log(css);
   };
 
   const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
+
     item.current = null;
     setSelected(null);
-  };
 
-  const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    setInput((prev) => ({
-      ...prev,
-      board: value,
-    }));
+    if (ref.current) {
+      const css = exportCSS(ref.current);
+      setCSS(css);
+    }
   };
 
   useEffect(() => {
     generateCoordinates();
+
+    if (!ref.current) return;
   }, [input, generateCoordinates]);
 
-  // observe resize by ResizeObserver
+  useLayoutEffect(() => {
+    if (isMounted && ref.current && input) {
+      console.log(ref.current);
+      const css = exportCSS(ref.current);
+      setCSS(css);
+    }
+  }, [isMounted, input]);
 
   return (
     <div className="flex gap-10 w-full">
@@ -215,20 +229,21 @@ const GridBox = () => {
               }
             />
           </div>
-          <button onClick={handleExport}>Export CSS</button>
         </div>
         <div className="grid-wrapper w-full border">
           <Suspense>
             <GridBoard
               ref={ref}
               className="grid-container p-2 w-fit mx-auto"
+              rowstemplate={`repeat(${input.rows},${input.height}px)`}
+              colstemplate={`repeat(${input.cols},${input.width}px)`}
               {...input}
             >
               {arr.map(({ x, y }, idx) => (
                 <GridItem
                   key={idx}
                   className={`grid-${idx} border rounded-lg cursor-pointer box hover:bg-[#a2c3b47d] ${
-                    selected && +selected.id === idx ? "bg-[#a2c3b47d]" : ""
+                    selected && +selected.id === idx ? "bg-[#ebfcf47d]" : ""
                   } `}
                   height={input.height}
                   data-id={idx}
@@ -242,9 +257,6 @@ const GridBox = () => {
                 >
                   {selected && +selected.id === idx && (
                     <div className="flex justify-start gap-2">
-                      <button className="border text-white bg-blue-500 px-2 py-1 text-sm">
-                        OK
-                      </button>
                       <button
                         className="border text-white bg-blue-500 px-2 py-1"
                         onClick={handleCancel}
@@ -259,14 +271,17 @@ const GridBox = () => {
           </Suspense>
         </div>
       </div>
-      <div className="px-5 w-full max-w-[250px] ">
-        <div className="flex flex-col border rounded-md p-4">
-          <label className="text-lg font-semibold">grid-template-area</label>
-          <textarea
-            className="text-lg resize-none h-[360px]"
-            value={input.board}
-            onChange={handleChangeTextArea}
-          />
+      <div className="px-5 w-full flex flex-col gap-2">
+        <div className="flex flex-col gap-2 border rounded-md p-4  h-full">
+          <div className="flex justify-between">
+            <label className="text-lg font-semibold">CSS</label>
+            <button className="text-sm" onClick={handleExport}>
+              Export CSS
+            </button>
+          </div>
+          <div className=" h-full border rounded-lg">
+            <pre>{css}</pre>
+          </div>
         </div>
       </div>
     </div>
