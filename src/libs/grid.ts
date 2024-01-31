@@ -1,3 +1,6 @@
+export const randomColor = () =>
+  Math.floor(Math.random() * 16777215).toString(16);
+
 export const convertArrayToArea = (board: string[]) => {
   let areaStr = board.reduce((prev, cur) => `${prev}\n"${cur}"`, "");
   return areaStr;
@@ -40,4 +43,16 @@ export const exportCSS = (element: HTMLElement) => {
   }
 
   return cssTemplate;
+};
+
+export const resetCSS = (element: HTMLElement) => {
+  const childList = element.querySelectorAll("& > *");
+
+  childList.forEach((child) => {
+    const elem = child as HTMLElement;
+    elem.style.gridArea = "auto";
+    elem.style.background = "";
+  });
+
+  return exportCSS(element);
 };
