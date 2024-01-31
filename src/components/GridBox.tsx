@@ -163,9 +163,9 @@ const GridBox = () => {
           <Loader />
         </Overlay>
       ) : (
-        <div className="flex gap-[48px] w-full justify-between">
-          <section className="flex flex-col gap-4">
-            <div className="flex gap-4 border p-2 w-fukk">
+        <div className="flex gap-8 w-full justify-between">
+          <section className="flex gap-4">
+            <div className="flex flex-col gap-4 border p-2 h-fit">
               <div className="flex flex-col">
                 <label className="text-sm" htmlFor="rows">
                   Rows
