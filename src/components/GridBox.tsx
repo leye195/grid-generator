@@ -1,9 +1,5 @@
 "use client";
 
-import useMounted from "@/hooks/useMounted";
-import { exportCSS } from "@/libs/grid";
-import { GridItemType, GridOptionsType } from "@/types/grid";
-import { WithNull } from "@/types/utils";
 import {
   Suspense,
   useCallback,
@@ -13,13 +9,19 @@ import {
   useState,
 } from "react";
 import styled from "styled-components";
+import useMounted from "@/hooks/useMounted";
+import { exportCSS, resetCSS } from "@/libs/grid";
+import { GridItemType, GridOptionsType } from "@/types/grid";
+import { WithNull } from "@/types/utils";
+import Overlay from "@/components/Overlay";
+import Loader from "@/components/Loader";
 
 const GridBoard = styled.div<GridOptionsType>`
-  position: relative;
   grid-template-areas: ${({ board }) => board};
   grid-template-rows: ${({ rowstemplate }) => rowstemplate};
   grid-template-columns: ${({ colstemplate }) => colstemplate};
   gap: ${({ gap }) => `${gap}px`};
+  grid-auto-flow: row dense;
 `;
 
 const GridItem = styled.div<{ resizable: string; height: number }>`
@@ -29,6 +31,7 @@ const GridItem = styled.div<{ resizable: string; height: number }>`
 `;
 
 const GridBox = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const isMounted = useMounted();
   const ref = useRef<HTMLDivElement>(null);
   const item = useRef<WithNull<HTMLDivElement>>(null);
@@ -53,7 +56,6 @@ const GridBox = () => {
   });
   const [arr, setArr] = useState<{ x: number; y: number }[]>([]);
   const [css, setCSS] = useState("");
-  //const [board, setBoard] = useState<string[]>([]);
 
   const generateCoordinates = useCallback(() => {
     setArr([]);
@@ -67,12 +69,12 @@ const GridBox = () => {
       }
       areas.push(`${area}`);
     }
-    //setBoard(areas);
   }, [input]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
 
+    // 사이즈 수정
     if (selected) return;
 
     const { id, row, col } = e.currentTarget.dataset;
@@ -103,6 +105,8 @@ const GridBox = () => {
     )}`;
     item.current.style.width = "auto";
     item.current.style.height = "auto";
+    /*item.current.style.background =
+      item.current.style.background ?? `#${randomColor()}a1`;*/
   };
 
   const handleExport = () => {
@@ -112,7 +116,13 @@ const GridBox = () => {
     console.log(css);
   };
 
-  const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleReset = () => {
+    if (!ref.current) return;
+
+    setCSS(resetCSS(ref.current));
+  };
+
+  const handleOK = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -125,6 +135,10 @@ const GridBox = () => {
     }
   };
 
+  const handleResetItem = () => {
+    console.log("resetItem");
+  };
+
   useEffect(() => {
     generateCoordinates();
 
@@ -133,143 +147,171 @@ const GridBox = () => {
 
   useLayoutEffect(() => {
     if (isMounted && ref.current && input) {
-      console.log(ref.current);
       const css = exportCSS(ref.current);
       setCSS(css);
+      setIsLoading(false);
     }
   }, [isMounted, input]);
 
   return (
-    <div className="flex gap-3 w-full">
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4 border p-2 w-fukk">
-          <div className="flex flex-col">
-            <label htmlFor="rows">Rows</label>
-            <input
-              id="rows"
-              className="border p-2"
-              type="number"
-              value={input.rows}
-              onChange={(e) =>
-                setInput((prev) => ({
-                  ...prev,
-                  rows: +e.target.value,
-                }))
-              }
-            />
+    <>
+      {isLoading && (
+        <Overlay className="flex items-center justify-center">
+          <Loader />
+        </Overlay>
+      )}
+      <div className="flex gap-3 w-full">
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4 border p-2 w-fukk">
+            <div className="flex flex-col">
+              <label htmlFor="rows">Rows</label>
+              <input
+                id="rows"
+                className="border p-2"
+                type="number"
+                value={input.rows}
+                onChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    rows: +e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="rows">Cols</label>
+              <input
+                className="border p-2"
+                type="number"
+                value={input.cols}
+                onChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    cols: +e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="width">Width</label>
+              <input
+                className="border p-2"
+                type="number"
+                value={input.width}
+                onChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    width: +e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="height">Height</label>
+              <input
+                className="border p-2"
+                type="number"
+                value={input.height}
+                onChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    height: +e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="gap">Gap</label>
+              <input
+                className="border p-2"
+                type="number"
+                value={input.gap}
+                onChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    gap: +e.target.value,
+                  }))
+                }
+              />
+            </div>
           </div>
-          <div className="flex flex-col">
-            <label htmlFor="rows">Cols</label>
-            <input
-              className="border p-2"
-              type="number"
-              value={input.cols}
-              onChange={(e) =>
-                setInput((prev) => ({
-                  ...prev,
-                  cols: +e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="width">Width</label>
-            <input
-              className="border p-2"
-              type="number"
-              value={input.width}
-              onChange={(e) =>
-                setInput((prev) => ({
-                  ...prev,
-                  width: +e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="height">Height</label>
-            <input
-              className="border p-2"
-              type="number"
-              value={input.height}
-              onChange={(e) =>
-                setInput((prev) => ({
-                  ...prev,
-                  height: +e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="gap">Gap</label>
-            <input
-              className="border p-2"
-              type="number"
-              value={input.gap}
-              onChange={(e) =>
-                setInput((prev) => ({
-                  ...prev,
-                  gap: +e.target.value,
-                }))
-              }
-            />
+          <div className="grid-wrapper w-full border relative">
+            <Suspense>
+              <GridBoard
+                ref={ref}
+                className="grid-container p-2 w-fit mx-auto"
+                rowstemplate={`repeat(${input.rows},${input.height}px)`}
+                colstemplate={`repeat(${input.cols},${input.width}px)`}
+                {...input}
+              >
+                {arr.map(({ x, y }, idx) => (
+                  <GridItem
+                    key={idx}
+                    className={`flex items-center justify-center border rounded-lg cursor-pointer box hover:opacity-65 grid-${idx} ${
+                      selected && +selected.id === idx ? "bg-[#ebfcf47d]" : ""
+                    } `}
+                    height={input.height}
+                    data-id={idx}
+                    data-row={x + 1}
+                    data-col={y + 1}
+                    data-width="auto"
+                    data-height="auto"
+                    data-name={`item-${idx}`}
+                    resizable={
+                      selected && +selected.id === idx ? "true" : "false"
+                    }
+                    onMouseUp={handleMouseUp}
+                    onClick={handleClick}
+                  >
+                    {selected && +selected.id === idx && (
+                      <div className="flex justify-start gap-2 absolute top-0 left-0">
+                        <button
+                          className="border text-white bg-blue-500 px-2 py-1"
+                          onClick={handleOK}
+                        >
+                          ok
+                        </button>
+                        <button
+                          className="border text-white bg-blue-500 px-2 py-1"
+                          onClick={handleResetItem}
+                        >
+                          reset
+                        </button>
+                      </div>
+                    )}
+                    <p className="text-center text-slate-400">{`item-${idx}`}</p>
+                  </GridItem>
+                ))}
+              </GridBoard>
+            </Suspense>
           </div>
         </div>
-        <div className="grid-wrapper w-full border">
-          <Suspense>
-            <GridBoard
-              ref={ref}
-              className="grid-container p-2 w-fit mx-auto"
-              rowstemplate={`repeat(${input.rows},${input.height}px)`}
-              colstemplate={`repeat(${input.cols},${input.width}px)`}
-              {...input}
-            >
-              {arr.map(({ x, y }, idx) => (
-                <GridItem
-                  key={idx}
-                  className={`grid-${idx} border rounded-lg cursor-pointer box hover:bg-[#a2c3b47d] ${
-                    selected && +selected.id === idx ? "bg-[#ebfcf47d]" : ""
-                  } `}
-                  height={input.height}
-                  data-id={idx}
-                  data-row={x + 1}
-                  data-col={y + 1}
-                  resizable={
-                    selected && +selected.id === idx ? "true" : "false"
-                  }
-                  onMouseUp={handleMouseUp}
-                  onClick={handleClick}
+        <div className="px-5 w-full flex flex-col gap-2">
+          <div className="flex flex-col gap-2 border rounded-md p-4  h-full">
+            <div className="flex justify-between">
+              <label className="text-lg font-semibold">CSS</label>
+              <div className="flex gap-2">
+                <button
+                  className="text-sm border p-1 rounded-lg"
+                  onClick={handleExport}
                 >
-                  {selected && +selected.id === idx && (
-                    <div className="flex justify-start gap-2">
-                      <button
-                        className="border text-white bg-blue-500 px-2 py-1"
-                        onClick={handleCancel}
-                      >
-                        x
-                      </button>
-                    </div>
-                  )}
-                </GridItem>
-              ))}
-            </GridBoard>
-          </Suspense>
-        </div>
-      </div>
-      <div className="px-5 w-full flex flex-col gap-2">
-        <div className="flex flex-col gap-2 border rounded-md p-4  h-full">
-          <div className="flex justify-between">
-            <label className="text-lg font-semibold">CSS</label>
-            <button className="text-sm" onClick={handleExport}>
-              Export CSS
-            </button>
-          </div>
-          <div className=" h-full border rounded-lg">
-            <pre>{css}</pre>
+                  Export CSS
+                </button>
+                <button
+                  className="text-sm border p-1 rounded-lg"
+                  onClick={handleReset}
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+            <div className=" h-full border rounded-lg max-h-[70vh] overflow-auto">
+              <pre>{css}</pre>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
