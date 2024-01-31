@@ -2,6 +2,8 @@
 
 import useMounted from "@/hooks/useMounted";
 import { exportCSS } from "@/libs/grid";
+import { GridItemType, GridOptionsType } from "@/types/grid";
+import { WithNull } from "@/types/utils";
 import {
   Suspense,
   useCallback,
@@ -11,23 +13,6 @@ import {
   useState,
 } from "react";
 import styled from "styled-components";
-
-type GridOptionsType = {
-  board: string;
-  rows: number;
-  cols: number;
-  rowstemplate: string;
-  colstemplate: string;
-  gap: number;
-  width: number;
-  height: number;
-};
-
-type GridItemType = {
-  id: number;
-  x: number;
-  y: number;
-};
 
 const GridBoard = styled.div<GridOptionsType>`
   position: relative;
@@ -46,8 +31,8 @@ const GridItem = styled.div<{ resizable: string; height: number }>`
 const GridBox = () => {
   const isMounted = useMounted();
   const ref = useRef<HTMLDivElement>(null);
-  const item = useRef<HTMLDivElement | null>(null);
-  const [selected, setSelected] = useState<GridItemType | null>(null);
+  const item = useRef<WithNull<HTMLDivElement>>(null);
+  const [selected, setSelected] = useState<WithNull<GridItemType>>(null);
   const [input, setInput] = useState({
     rows: 10,
     cols: 10,
