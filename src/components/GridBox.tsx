@@ -20,7 +20,6 @@ import Loader from "@/components/Loader";
 import InputWithLabel from "@/components/InputWithLabel";
 
 const GridBoard = styled.div<GridOptionsType>`
-  grid-template-areas: ${({ board }) => board};
   grid-template-rows: ${({ rowstemplate }) => rowstemplate};
   grid-template-columns: ${({ colstemplate }) => colstemplate};
   gap: ${({ gap }) => `${gap}px`};
@@ -46,17 +45,6 @@ const GridBox = () => {
     width: 90,
     height: 90,
     gap: 4,
-    board: `
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."
-     ". . . . . . . . . ."`,
   });
   const [arr, setArr] = useState<{ x: number; y: number }[]>([]);
   const [css, setCSS] = useState("");

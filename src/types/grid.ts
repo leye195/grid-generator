@@ -1,5 +1,4 @@
 export type GridOptionsType = {
-  board: string;
   rows: number;
   cols: number;
   rowstemplate: string;
