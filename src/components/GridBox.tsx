@@ -13,6 +13,8 @@ import useMounted from "@/hooks/useMounted";
 import { exportCSS, resetCSS } from "@/libs/grid";
 import { GridItemType, GridOptionsType } from "@/types/grid";
 import { WithNull } from "@/types/utils";
+import Check from "@/components/icons/Check";
+import Refresh from "@/components/icons/refresh";
 import Overlay from "@/components/Overlay";
 import Loader from "@/components/Loader";
 
@@ -141,6 +143,7 @@ const GridBox = () => {
 
   useEffect(() => {
     generateCoordinates();
+    setIsLoading(false);
 
     if (!ref.current) return;
   }, [input, generateCoordinates]);
@@ -149,168 +152,169 @@ const GridBox = () => {
     if (isMounted && ref.current && input) {
       const css = exportCSS(ref.current);
       setCSS(css);
-      setIsLoading(false);
     }
   }, [isMounted, input]);
 
   return (
     <>
-      {isLoading && (
+      {isLoading ? (
         <Overlay className="flex items-center justify-center">
           <Loader />
         </Overlay>
-      )}
-      <div className="flex gap-3 w-full">
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-4 border p-2 w-fukk">
-            <div className="flex flex-col">
-              <label htmlFor="rows">Rows</label>
-              <input
-                id="rows"
-                className="border p-2"
-                type="number"
-                value={input.rows}
-                onChange={(e) =>
-                  setInput((prev) => ({
-                    ...prev,
-                    rows: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="rows">Cols</label>
-              <input
-                className="border p-2"
-                type="number"
-                value={input.cols}
-                onChange={(e) =>
-                  setInput((prev) => ({
-                    ...prev,
-                    cols: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="width">Width</label>
-              <input
-                className="border p-2"
-                type="number"
-                value={input.width}
-                onChange={(e) =>
-                  setInput((prev) => ({
-                    ...prev,
-                    width: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="height">Height</label>
-              <input
-                className="border p-2"
-                type="number"
-                value={input.height}
-                onChange={(e) =>
-                  setInput((prev) => ({
-                    ...prev,
-                    height: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="gap">Gap</label>
-              <input
-                className="border p-2"
-                type="number"
-                value={input.gap}
-                onChange={(e) =>
-                  setInput((prev) => ({
-                    ...prev,
-                    gap: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-          </div>
-          <div className="grid-wrapper w-full border relative">
-            <Suspense>
-              <GridBoard
-                ref={ref}
-                className="grid-container p-2 w-fit mx-auto"
-                rowstemplate={`repeat(${input.rows},${input.height}px)`}
-                colstemplate={`repeat(${input.cols},${input.width}px)`}
-                {...input}
-              >
-                {arr.map(({ x, y }, idx) => (
-                  <GridItem
-                    key={idx}
-                    className={`flex items-center justify-center border rounded-lg cursor-pointer box hover:opacity-65 grid-${idx} ${
-                      selected && +selected.id === idx ? "bg-[#ebfcf47d]" : ""
-                    } `}
-                    height={input.height}
-                    data-id={idx}
-                    data-row={x + 1}
-                    data-col={y + 1}
-                    data-width="auto"
-                    data-height="auto"
-                    data-name={`item-${idx}`}
-                    resizable={
-                      selected && +selected.id === idx ? "true" : "false"
-                    }
-                    onMouseUp={handleMouseUp}
-                    onClick={handleClick}
-                  >
-                    {selected && +selected.id === idx && (
-                      <div className="flex justify-start gap-2 absolute top-0 left-0">
-                        <button
-                          className="border text-white bg-blue-500 px-2 py-1"
-                          onClick={handleOK}
-                        >
-                          ok
-                        </button>
-                        <button
-                          className="border text-white bg-blue-500 px-2 py-1"
-                          onClick={handleResetItem}
-                        >
-                          reset
-                        </button>
-                      </div>
-                    )}
-                    <p className="text-center text-slate-400">{`item-${idx}`}</p>
-                  </GridItem>
-                ))}
-              </GridBoard>
-            </Suspense>
-          </div>
-        </div>
-        <div className="px-5 w-full flex flex-col gap-2">
-          <div className="flex flex-col gap-2 border rounded-md p-4  h-full">
-            <div className="flex justify-between">
-              <label className="text-lg font-semibold">CSS</label>
-              <div className="flex gap-2">
-                <button
-                  className="text-sm border p-1 rounded-lg"
-                  onClick={handleExport}
-                >
-                  Export CSS
-                </button>
-                <button
-                  className="text-sm border p-1 rounded-lg"
-                  onClick={handleReset}
-                >
-                  Reset
-                </button>
+      ) : (
+        <div className="flex gap-3 w-full">
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4 border p-2 w-fukk">
+              <div className="flex flex-col">
+                <label htmlFor="rows">Rows</label>
+                <input
+                  id="rows"
+                  className="border p-2"
+                  type="number"
+                  value={input.rows}
+                  onChange={(e) =>
+                    setInput((prev) => ({
+                      ...prev,
+                      rows: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="rows">Cols</label>
+                <input
+                  className="border p-2"
+                  type="number"
+                  value={input.cols}
+                  onChange={(e) =>
+                    setInput((prev) => ({
+                      ...prev,
+                      cols: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="width">Width</label>
+                <input
+                  className="border p-2"
+                  type="number"
+                  value={input.width}
+                  onChange={(e) =>
+                    setInput((prev) => ({
+                      ...prev,
+                      width: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="height">Height</label>
+                <input
+                  className="border p-2"
+                  type="number"
+                  value={input.height}
+                  onChange={(e) =>
+                    setInput((prev) => ({
+                      ...prev,
+                      height: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="gap">Gap</label>
+                <input
+                  className="border p-2"
+                  type="number"
+                  value={input.gap}
+                  onChange={(e) =>
+                    setInput((prev) => ({
+                      ...prev,
+                      gap: +e.target.value,
+                    }))
+                  }
+                />
               </div>
             </div>
-            <div className=" h-full border rounded-lg max-h-[70vh] overflow-auto">
-              <pre>{css}</pre>
+            <div className="grid-wrapper w-fit border relative">
+              <Suspense>
+                <GridBoard
+                  ref={ref}
+                  className="grid-container p-2 w-fit mx-auto"
+                  rowstemplate={`repeat(${input.rows ?? 10},${
+                    input.height ?? 10
+                  }px)`}
+                  colstemplate={`repeat(${input.cols ?? 10},${
+                    input.width ?? 10
+                  }px)`}
+                  {...input}
+                >
+                  {arr.map(({ x, y }, idx) => (
+                    <GridItem
+                      key={idx}
+                      className={`flex items-center justify-center border rounded-lg cursor-pointer box hover:opacity-65 grid-${idx} ${
+                        selected && +selected.id === idx ? "bg-[#ebfcf47d]" : ""
+                      } `}
+                      height={input.height}
+                      data-id={idx}
+                      data-row={x + 1}
+                      data-col={y + 1}
+                      data-width="auto"
+                      data-height="auto"
+                      data-name={`item-${idx}`}
+                      resizable={
+                        selected && +selected.id === idx ? "true" : "false"
+                      }
+                      onMouseUp={handleMouseUp}
+                      onClick={handleClick}
+                    >
+                      {selected && +selected.id === idx && (
+                        <div className="flex justify-start gap-2 absolute top-0 left-0">
+                          <button className="text-blue-700" onClick={handleOK}>
+                            <Check className="w-[20px] h-[20px]" />
+                          </button>
+                          <button
+                            className=" text-blue-700"
+                            onClick={handleResetItem}
+                          >
+                            <Refresh className="w-[20px] h-[20px]" />
+                          </button>
+                        </div>
+                      )}
+                      <p className="text-center text-slate-400">{`item-${idx}`}</p>
+                    </GridItem>
+                  ))}
+                </GridBoard>
+              </Suspense>
+            </div>
+          </div>
+          <div className="px-5 w-full flex flex-col gap-2">
+            <div className="flex flex-col gap-2 border rounded-md p-4  h-full">
+              <div className="flex justify-between">
+                <label className="text-lg font-semibold">CSS</label>
+                <div className="flex gap-2">
+                  <button
+                    className="text-sm border p-1 rounded-lg"
+                    onClick={handleExport}
+                  >
+                    Export CSS
+                  </button>
+                  <button
+                    className="text-sm border p-1 rounded-lg"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+              <div className=" h-full border rounded-lg max-h-[70vh] overflow-auto">
+                <pre>{css}</pre>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

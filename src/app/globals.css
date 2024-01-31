@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.grid-wrapper {
+  margin: 0 auto;
+}
+
 .grid-container {
   display: grid;
 }
