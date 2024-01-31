@@ -34,6 +34,7 @@ const GridItem = styled.div<{ resizable: string; height: number }>`
 
 const GridBox = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isHideCSS, setIsHideCSS] = useState(false);
   const isMounted = useMounted();
   const ref = useRef<HTMLDivElement>(null);
   const item = useRef<WithNull<HTMLDivElement>>(null);
@@ -162,14 +163,16 @@ const GridBox = () => {
           <Loader />
         </Overlay>
       ) : (
-        <div className="flex gap-3 w-full">
-          <div className="flex flex-col gap-4">
+        <div className="flex gap-[48px] w-full justify-between">
+          <section className="flex flex-col gap-4">
             <div className="flex gap-4 border p-2 w-fukk">
               <div className="flex flex-col">
-                <label htmlFor="rows">Rows</label>
+                <label className="text-sm" htmlFor="rows">
+                  Rows
+                </label>
                 <input
                   id="rows"
-                  className="border p-2"
+                  className="border p-1"
                   type="number"
                   value={input.rows}
                   onChange={(e) =>
@@ -181,9 +184,11 @@ const GridBox = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="rows">Cols</label>
+                <label className="text-sm" htmlFor="rows">
+                  Cols
+                </label>
                 <input
-                  className="border p-2"
+                  className="border p-1"
                   type="number"
                   value={input.cols}
                   onChange={(e) =>
@@ -195,9 +200,11 @@ const GridBox = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="width">Width</label>
+                <label className="text-sm" htmlFor="width">
+                  Width
+                </label>
                 <input
-                  className="border p-2"
+                  className="border p-1"
                   type="number"
                   value={input.width}
                   onChange={(e) =>
@@ -209,9 +216,11 @@ const GridBox = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="height">Height</label>
+                <label className="text-sm" htmlFor="height">
+                  Height
+                </label>
                 <input
-                  className="border p-2"
+                  className="border p-1"
                   type="number"
                   value={input.height}
                   onChange={(e) =>
@@ -223,9 +232,11 @@ const GridBox = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="gap">Gap</label>
+                <label className="text-sm" htmlFor="gap">
+                  Gap
+                </label>
                 <input
-                  className="border p-2"
+                  className="border p-1"
                   type="number"
                   value={input.gap}
                   onChange={(e) =>
@@ -237,11 +248,11 @@ const GridBox = () => {
                 />
               </div>
             </div>
-            <div className="grid-wrapper w-fit border relative">
+            <div className="grid-wrapper w-fit border-2 relative border-black rounded-lg">
               <Suspense>
                 <GridBoard
                   ref={ref}
-                  className="grid-container p-2 w-fit mx-auto"
+                  className="grid-container p-2 w-fit mx-auto "
                   rowstemplate={`repeat(${input.rows ?? 10},${
                     input.height ?? 10
                   }px)`}
@@ -288,9 +299,21 @@ const GridBox = () => {
                 </GridBoard>
               </Suspense>
             </div>
-          </div>
-          <div className="px-5 w-full flex flex-col gap-2">
-            <div className="flex flex-col gap-2 border rounded-md p-4  h-full">
+          </section>
+          <section
+            className={`h-fit flex flex-col gap-2 pl-4 relative max-w-[400px] ${
+              isHideCSS ? "w-0 border-l" : "w-full"
+            }`}
+          >
+            <button
+              className="absolute rotate-[-90deg] origin-bottom-right right-[calc(95%+5px)] bottom-[96%] before:content-[''] before:absolute before:top-0 before:left-[-4px] before:w-[calc(100%+8px)] before:h-[calc(100%+2px)] before:hover:bg-gray-400/20 before:rounded-md"
+              onClick={() => setIsHideCSS((prev) => !prev)}
+            >
+              <span className="text-xs hover:text-white">
+                {isHideCSS ? "Show" : "Hide"}
+              </span>
+            </button>
+            <div className="flex flex-col gap-2 border rounded-md p-4">
               <div className="flex justify-between">
                 <label className="text-lg font-semibold">CSS</label>
                 <div className="flex gap-2">
@@ -312,7 +335,7 @@ const GridBox = () => {
                 <pre>{css}</pre>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       )}
     </>
