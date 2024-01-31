@@ -17,6 +17,7 @@ import Check from "@/components/icons/Check";
 import Refresh from "@/components/icons/refresh";
 import Overlay from "@/components/Overlay";
 import Loader from "@/components/Loader";
+import InputWithLabel from "@/components/InputWithLabel";
 
 const GridBoard = styled.div<GridOptionsType>`
   grid-template-areas: ${({ board }) => board};
@@ -166,87 +167,56 @@ const GridBox = () => {
         <div className="flex gap-8 w-full justify-between">
           <section className="flex gap-4">
             <div className="flex flex-col gap-4 border p-2 h-fit">
-              <div className="flex flex-col">
-                <label className="text-sm" htmlFor="rows">
-                  Rows
-                </label>
-                <input
-                  id="rows"
-                  className="border p-1"
-                  type="number"
-                  value={input.rows}
-                  onChange={(e) =>
-                    setInput((prev) => ({
-                      ...prev,
-                      rows: +e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm" htmlFor="rows">
-                  Cols
-                </label>
-                <input
-                  className="border p-1"
-                  type="number"
-                  value={input.cols}
-                  onChange={(e) =>
-                    setInput((prev) => ({
-                      ...prev,
-                      cols: +e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm" htmlFor="width">
-                  Width
-                </label>
-                <input
-                  className="border p-1"
-                  type="number"
-                  value={input.width}
-                  onChange={(e) =>
-                    setInput((prev) => ({
-                      ...prev,
-                      width: +e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm" htmlFor="height">
-                  Height
-                </label>
-                <input
-                  className="border p-1"
-                  type="number"
-                  value={input.height}
-                  onChange={(e) =>
-                    setInput((prev) => ({
-                      ...prev,
-                      height: +e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm" htmlFor="gap">
-                  Gap
-                </label>
-                <input
-                  className="border p-1"
-                  type="number"
-                  value={input.gap}
-                  onChange={(e) =>
-                    setInput((prev) => ({
-                      ...prev,
-                      gap: +e.target.value,
-                    }))
-                  }
-                />
-              </div>
+              <InputWithLabel
+                label="Rows"
+                value={input.rows}
+                handleChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    rows: +e.target.value,
+                  }))
+                }
+              />
+              <InputWithLabel
+                label="Cols"
+                value={input.cols}
+                handleChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    cols: +e.target.value,
+                  }))
+                }
+              />
+              <InputWithLabel
+                label="Width"
+                value={input.width}
+                handleChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    width: +e.target.value,
+                  }))
+                }
+              />
+              <InputWithLabel
+                label="Height"
+                value={input.height}
+                handleChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    height: +e.target.value,
+                  }))
+                }
+              />
+              <InputWithLabel
+                label="Gap"
+                value={input.gap}
+                handleChange={(e) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    gap: +e.target.value,
+                  }))
+                }
+              />
             </div>
             <div className="grid-wrapper w-fit border-2 relative border-black rounded-lg">
               <Suspense>
