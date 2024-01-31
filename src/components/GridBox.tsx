@@ -308,7 +308,7 @@ const GridBox = () => {
                   </button>
                 </div>
               </div>
-              <div className=" h-full border rounded-lg max-h-[70vh] overflow-auto">
+              <div className="h-full border rounded-lg max-w-[400px] max-h-[70vh] text-xs overflow-auto">
                 <pre>{css}</pre>
               </div>
             </div>
