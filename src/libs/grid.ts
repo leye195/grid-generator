@@ -33,7 +33,7 @@ export const exportCSS = (element: HTMLElement) => {
 
     if (gridArea) {
       cssTemplate += `
-    .${child.classList[0]} {
+    .${child.dataset["name"]} {
       width: auto;
       height: auto;
       grid-area: ${gridArea}
