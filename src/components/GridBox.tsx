@@ -33,11 +33,9 @@ const GridItem = styled.div<{ resizable: string; height: number }>`
 `;
 
 const GridBox = () => {
+  const [tab, setTab] = useState("desktop");
   const [isLoading, setIsLoading] = useState(true);
   const [isHideCSS, setIsHideCSS] = useState(false);
-  const isMounted = useMounted();
-  const ref = useRef<HTMLDivElement>(null);
-  const item = useRef<WithNull<HTMLDivElement>>(null);
   const [selected, setSelected] = useState<WithNull<GridItemType>>(null);
   const [input, setInput] = useState({
     rows: 10,
@@ -48,6 +46,9 @@ const GridBox = () => {
   });
   const [arr, setArr] = useState<{ x: number; y: number }[]>([]);
   const [css, setCSS] = useState("");
+  const isMounted = useMounted();
+  const ref = useRef<HTMLDivElement>(null);
+  const item = useRef<WithNull<HTMLDivElement>>(null);
 
   const generateCoordinates = useCallback(() => {
     setArr([]);
@@ -97,8 +98,6 @@ const GridBox = () => {
     )}`;
     item.current.style.width = "auto";
     item.current.style.height = "auto";
-    /*item.current.style.background =
-      item.current.style.background ?? `#${randomColor()}a1`;*/
   };
 
   const handleExport = () => {
@@ -129,6 +128,10 @@ const GridBox = () => {
 
   const handleResetItem = () => {
     console.log("resetItem");
+  };
+
+  const handleTab = (type: string) => () => {
+    setTab(type);
   };
 
   useEffect(() => {
@@ -206,11 +209,37 @@ const GridBox = () => {
                 }
               />
             </div>
-            <div className="grid-wrapper w-fit border-2 relative border-black rounded-lg">
+            <div className="grid-wrapper w-fit relative rounded-lg p-2 border">
+              <div className="flex gap-2 pb-2 text-sm">
+                <button
+                  className={`border rounded-md px-2 py-1 ${
+                    tab === "desktop" && "bg-slate-800 text-white"
+                  }`}
+                  onClick={handleTab("desktop")}
+                >
+                  Desktop
+                </button>
+                <button
+                  className={`border rounded-md px-2 py-1 ${
+                    tab === "tablet" && "bg-slate-800 text-white"
+                  }`}
+                  onClick={handleTab("tablet")}
+                >
+                  Tablet
+                </button>
+                <button
+                  className={`border rounded-md px-2 py-1 ${
+                    tab === "mobile" && "bg-slate-800 text-white"
+                  }`}
+                  onClick={handleTab("mobile")}
+                >
+                  Mobile
+                </button>
+              </div>
               <Suspense>
                 <GridBoard
                   ref={ref}
-                  className="grid-container p-2 w-fit mx-auto "
+                  className="grid-container  w-fit mx-auto "
                   rowstemplate={`repeat(${input.rows ?? 10},${
                     input.height ?? 10
                   }px)`}
