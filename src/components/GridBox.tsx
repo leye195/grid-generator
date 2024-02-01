@@ -183,7 +183,10 @@ const GridBox = () => {
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
-                    rows: +e.target.value,
+                    [tab]: {
+                      ...prev[tab],
+                      rows: +e.target.value,
+                    },
                   }))
                 }
               />
@@ -193,7 +196,10 @@ const GridBox = () => {
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
-                    cols: +e.target.value,
+                    [tab]: {
+                      ...prev[tab],
+                      cols: +e.target.value,
+                    },
                   }))
                 }
               />
@@ -203,7 +209,10 @@ const GridBox = () => {
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
-                    width: +e.target.value,
+                    [tab]: {
+                      ...prev[tab],
+                      width: +e.target.value,
+                    },
                   }))
                 }
               />
@@ -213,7 +222,10 @@ const GridBox = () => {
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
-                    height: +e.target.value,
+                    [tab]: {
+                      ...prev[tab],
+                      height: +e.target.value,
+                    },
                   }))
                 }
               />
@@ -223,7 +235,10 @@ const GridBox = () => {
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
-                    gap: +e.target.value,
+                    [tab]: {
+                      ...prev[tab],
+                      gap: +e.target.value,
+                    },
                   }))
                 }
               />
