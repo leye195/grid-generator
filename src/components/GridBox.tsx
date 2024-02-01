@@ -14,7 +14,7 @@ import { exportCSS, resetCSS } from "@/libs/grid";
 import { GridItemType, GridOptionsType } from "@/types/grid";
 import { WithNull } from "@/types/utils";
 import Check from "@/components/icons/Check";
-import Refresh from "@/components/icons/refresh";
+import Refresh from "@/components/icons/Refresh";
 import Overlay from "@/components/Overlay";
 import Loader from "@/components/Loader";
 import InputWithLabel from "@/components/InputWithLabel";
