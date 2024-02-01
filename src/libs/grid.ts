@@ -13,7 +13,6 @@ export const exportCSS = (element: HTMLElement) => {
   const cols = element.getAttribute("cols");
   const width = element.getAttribute("width");
   const height = element.getAttribute("height");
-
   const childList = element.querySelectorAll("div");
 
   let cssTemplate = `
@@ -30,10 +29,11 @@ export const exportCSS = (element: HTMLElement) => {
   for (let i = 0; i < childList.length; i++) {
     const child = childList[i];
     const { gridArea } = window.getComputedStyle(child);
+    const name = child.dataset["name"];
 
-    if (gridArea) {
+    if (gridArea && name) {
       cssTemplate += `
-    .${child.dataset["name"]} {
+    .${name} {
       width: auto;
       height: auto;
       grid-area: ${gridArea}
