@@ -33,16 +33,32 @@ const GridItem = styled.div<{ resizable: string; height: number }>`
 `;
 
 const GridBox = () => {
-  const [tab, setTab] = useState("desktop");
+  const [tab, setTab] = useState<"desktop" | "mobile" | "tablet">("desktop");
   const [isLoading, setIsLoading] = useState(true);
   const [isHideCSS, setIsHideCSS] = useState(false);
   const [selected, setSelected] = useState<WithNull<GridItemType>>(null);
   const [input, setInput] = useState({
-    rows: 10,
-    cols: 10,
-    width: 90,
-    height: 90,
-    gap: 4,
+    desktop: {
+      rows: 10,
+      cols: 10,
+      width: 90,
+      height: 90,
+      gap: 4,
+    },
+    tablet: {
+      rows: 8,
+      cols: 8,
+      width: 90,
+      height: 90,
+      gap: 4,
+    },
+    mobile: {
+      rows: 4,
+      cols: 4,
+      width: 90,
+      height: 90,
+      gap: 4,
+    },
   });
   const [arr, setArr] = useState<{ x: number; y: number }[]>([]);
   const [css, setCSS] = useState("");
@@ -53,16 +69,17 @@ const GridBox = () => {
   const generateCoordinates = useCallback(() => {
     setArr([]);
     const areas = [];
+    const data = input[tab];
 
-    for (let i = 0; i < input.cols; i++) {
+    for (let i = 0; i < data.cols; i++) {
       let area = "";
-      for (let j = 0; j < input.rows; j++) {
+      for (let j = 0; j < data.rows; j++) {
         setArr((prev) => [...prev, { x: i, y: j }]);
-        area += j === input.rows - 1 ? "." : ". ";
+        area += j === data.rows - 1 ? "." : ". ";
       }
       areas.push(`${area}`);
     }
-  }, [input]);
+  }, [input, tab]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -90,11 +107,13 @@ const GridBox = () => {
 
     if (!newWidth || !newHeight) return;
 
+    const data = input[tab];
+
     item.current.style.gridColumn = `auto / span ${Math.round(
-      newWidth / input.width
+      newWidth / data.width
     )}`;
     item.current.style.gridRow = `auto / span ${Math.round(
-      newHeight / input.height
+      newHeight / data.height
     )}`;
     item.current.style.width = "auto";
     item.current.style.height = "auto";
@@ -130,7 +149,7 @@ const GridBox = () => {
     console.log("resetItem");
   };
 
-  const handleTab = (type: string) => () => {
+  const handleTab = (type: "desktop" | "mobile" | "tablet") => () => {
     setTab(type);
   };
 
@@ -142,11 +161,11 @@ const GridBox = () => {
   }, [input, generateCoordinates]);
 
   useLayoutEffect(() => {
-    if (isMounted && ref.current && input) {
+    if (isMounted && ref.current && input && tab) {
       const css = exportCSS(ref.current);
       setCSS(css);
     }
-  }, [isMounted, input]);
+  }, [isMounted, input, tab]);
 
   return (
     <>
@@ -160,7 +179,7 @@ const GridBox = () => {
             <div className="flex flex-col gap-4 border p-2 h-fit">
               <InputWithLabel
                 label="Rows"
-                value={input.rows}
+                value={input[tab].rows}
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
@@ -170,7 +189,7 @@ const GridBox = () => {
               />
               <InputWithLabel
                 label="Cols"
-                value={input.cols}
+                value={input[tab].cols}
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
@@ -180,7 +199,7 @@ const GridBox = () => {
               />
               <InputWithLabel
                 label="Width"
-                value={input.width}
+                value={input[tab].width}
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
@@ -190,7 +209,7 @@ const GridBox = () => {
               />
               <InputWithLabel
                 label="Height"
-                value={input.height}
+                value={input[tab].height}
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
@@ -200,7 +219,7 @@ const GridBox = () => {
               />
               <InputWithLabel
                 label="Gap"
-                value={input.gap}
+                value={input[tab].gap}
                 handleChange={(e) =>
                   setInput((prev) => ({
                     ...prev,
@@ -240,13 +259,13 @@ const GridBox = () => {
                 <GridBoard
                   ref={ref}
                   className="grid-container  w-fit mx-auto "
-                  rowstemplate={`repeat(${input.rows ?? 10},${
-                    input.height ?? 10
+                  rowstemplate={`repeat(${input[tab].rows ?? 10},${
+                    input[tab].height ?? 10
                   }px)`}
-                  colstemplate={`repeat(${input.cols ?? 10},${
-                    input.width ?? 10
+                  colstemplate={`repeat(${input[tab].cols ?? 10},${
+                    input[tab].width ?? 10
                   }px)`}
-                  {...input}
+                  {...input[tab]}
                 >
                   {arr.map(({ x, y }, idx) => (
                     <GridItem
@@ -254,7 +273,7 @@ const GridBox = () => {
                       className={`flex items-center justify-center border rounded-lg cursor-pointer box hover:opacity-65 grid-${idx} ${
                         selected && +selected.id === idx ? "bg-[#ebfcf47d]" : ""
                       } `}
-                      height={input.height}
+                      height={input[tab].height}
                       data-id={idx}
                       data-row={x + 1}
                       data-col={y + 1}
